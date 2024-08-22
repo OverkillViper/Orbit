@@ -59,7 +59,7 @@ const submit = () => {
                 </div>
             </div>
 
-            <hr class="border-gray-700 my-6">
+            <hr class="border-neutral-700 my-6">
 
             <div class="flex flex-col items-center">
                 <div>Don't have account?</div>

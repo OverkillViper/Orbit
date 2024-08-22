@@ -15,7 +15,7 @@ use Inertia\Inertia;
 // });
 
 Route::get('/', function () {
-    return redirect()->route('feed');
+    return redirect()->route('dashboard');
 });
 
 // Route::get('/dashboard', function () {

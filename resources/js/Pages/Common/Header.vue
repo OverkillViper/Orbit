@@ -18,8 +18,8 @@ const props = defineProps({
     <Head :title="title" />
     <div class="flex items-center h-16 px-6 border border-t-0 border-l-0 border-r-0 border-b-gray-800">
         <div class="basis-1/5 2xl:basis-1/6">
-            <Link href="/" class="flex">
-                <img src="/images/logo.png" alt="logo" class="w-6 h-6">
+            <Link href="/" class="flex items-center">
+                <img src="/images/logo.png" alt="logo" class="w-10 h-10">
                 <div class="font-bold ms-4">Orbit</div>
             </Link>
         </div>

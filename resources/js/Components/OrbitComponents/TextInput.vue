@@ -24,7 +24,7 @@ const togglePassword = () => {
 <template>
     <div>
         <div v-if="label" class="text-xs text-gray-400 uppercase font-medium mb-1">{{ label }}</div>
-        <div class="bg-secondary px-3 h-10 flex items-center rounded-lg border border-transparent hover:border-gray-700 transition">
+        <div class="bg-secondary px-3 h-10 flex items-center rounded-lg border border-transparent hover:border-neutral-800 transition">
             <div v-if="icon" class="">
                 <span class="pi text-gray-500 w-2 h-2" :class="'pi-' + icon" style="font-size: 0.8rem;"></span>
             </div>

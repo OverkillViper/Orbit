@@ -12,9 +12,19 @@ export default {
 
     theme: {
         extend: {
-            fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+            colors: {
+                primary     : "#141414",
+                secondary   : "#212121",
+                accent      : "#252525",
             },
+            fontFamily: {
+                light:      ["Nunito Light"],
+                regular:    ["Nunito Regular"],
+                medium:     ["Nunito Medium"],
+                semibold:   ["Nunito SemiBold"],
+                bold:       ["Nunito Bold"],
+                extrabold:  ["Nunito ExtraBold"],
+            }
         },
     },
 
