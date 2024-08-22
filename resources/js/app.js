@@ -1,12 +1,23 @@
 import './bootstrap';
 import '../css/app.css';
+import 'primeicons/primeicons.css'
 
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import PrimeVue from 'primevue/config';
+import { definePreset } from '@primevue/themes';
+import Aura from '@primevue/themes/aura';
+import theme from 'tailwindcss/defaultTheme';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+const appPreset = definePreset(Aura, {
+    semantic: {
+        primary: '#141414',
+    }
+})
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -15,6 +26,14 @@ createInertiaApp({
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
+            .use(PrimeVue, {
+                theme: {
+                    preset : appPreset,
+                    options: {
+                        darkModeSelector: '.my-app-dark',
+                    }
+                }
+            })
             .mount(el);
     },
     progress: {

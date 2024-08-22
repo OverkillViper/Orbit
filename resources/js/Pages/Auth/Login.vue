@@ -1,11 +1,10 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import TextInput from '@/Components/OrbitComponents/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import Checkbox from 'primevue/checkbox';
+import Button from '@/Components/OrbitComponents/Button.vue';
+import ProgressSpinner from 'primevue/progressspinner';
 
 defineProps({
     canResetPassword: {
@@ -33,11 +32,44 @@ const submit = () => {
     <GuestLayout>
         <Head title="Log in" />
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
+        <div class="flex justify-center items-center h-52" v-if="form.processing">
+            <ProgressSpinner style="width: 70px; height: 70px" strokeWidth="2" fill="transparent" animationDuration="1s" />
         </div>
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" v-else>
+            <div class="text-lg font-medium">
+                Sign In
+            </div>
+            <div class="text-gray-400 font-light text-sm">Log into your account</div>
+
+            <div class="mt-10 flex flex-col gap-y-4">
+                <TextInput v-model="form.email"     icon="envelope" placeholder="Email"/>
+                <TextInput v-model="form.password"  icon="key"      placeholder="Password" password />
+                <div class="flex items-center text-sm">
+                    <Checkbox v-model="form.remember" :binary="true" inputId="remember"/>
+                    <div class="flex-grow">
+                        <label class="text-gray-400 ms-2 select-none" for="remember">Keep me logged in</label>
+                    </div>
+                    <Link v-if="canResetPassword" :href="route('password.request')" class="text-gray-400 hover:text-gray-200 transition underline">
+                        Forgot Password?
+                    </Link>
+                </div>
+                <div class="flex justify-center">
+                    <Button type="submit" label="Sign in" icon="sign-in" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"/>
+                </div>
+            </div>
+
+            <hr class="border-gray-700 my-6">
+
+            <div class="flex flex-col items-center">
+                <div>Don't have account?</div>
+                <Link :href="route('register')" class="my-4">
+                    <Button label="Register" icon="user-plus" />
+                </Link>
+            </div>
+        </form>
+
+        <!-- <form @submit.prevent="submit">
             <div>
                 <InputLabel for="email" value="Email" />
 
@@ -89,6 +121,6 @@ const submit = () => {
                     Log in
                 </PrimaryButton>
             </div>
-        </form>
+        </form> -->
     </GuestLayout>
 </template>
