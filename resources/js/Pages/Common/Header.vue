@@ -15,25 +15,29 @@ const props = defineProps({
 </script>
 
 <template>
-    <Head :title="title" />
-    <div class="flex items-center h-16 px-6 border border-t-0 border-l-0 border-r-0 border-b-gray-800">
-        <div class="basis-1/5 2xl:basis-1/6">
-            <Link href="/" class="flex items-center">
-                <img src="/images/logo.png" alt="logo" class="w-10 h-10">
-                <div class="font-bold ms-4">Orbit</div>
-            </Link>
-        </div>
-        <div class="basis-3/5 2xl:basis-4/6">
-            <form @submit.prevent class="flex items-center">
-                <TextInput v-model="searchForm.query" class="w-1/3"/>
-                <Button label="Search" icon="search" class="h-10 ms-4"/>
-            </form>
-        </div>
-        <div class="flex items-center justify-end basis-1/5 2xl:basis-1/6 gap-x-4">
-            <Notifications />
-            <Link :href="route('logout')" method="post" as="button">
-                <span class="pi pi-power-off text-gray-400 hover:text-white transition"></span>
-            </Link>
-        </div>
+    <div class="fixed bg-primary z-10 w-full">
+        <Head :title="title" />
+        <header class="flex items-center h-16 px-6 border border-t-0 border-l-0 border-r-0 border-b-neutral-800">
+            <div class="basis-1/5 2xl:basis-1/6">
+                <Link href="/" class="flex items-center">
+                    <img src="/images/logo.png" alt="logo" class="w-10 h-10">
+                    <div class="font-bold ms-4">Orbit</div>
+                </Link>
+            </div>
+            <div class="basis-3/5 2xl:basis-4/6">
+                <form @submit.prevent class="flex items-center">
+                    <TextInput v-model="searchForm.query" class="w-1/3" placeholder="Lets find something"/>
+                    <Button label="Search" icon="search" class="h-10 ms-4"/>
+                </form>
+            </div>
+            <div class="flex items-center justify-end basis-1/5 2xl:basis-1/6 gap-x-4">
+                <Notifications />
+                <Link :href="route('logout')" method="post" as="button">
+                    <span class="pi pi-power-off text-gray-400 hover:text-white transition"></span>
+                </Link>
+            </div>
+        </header>
     </div>
+    
+    
 </template>

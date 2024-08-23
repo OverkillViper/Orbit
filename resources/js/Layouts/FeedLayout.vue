@@ -14,8 +14,8 @@ const props = defineProps({
 <template>
     <div class="min-h-screen bg-primary">
         <Header :title="title"/>
-        <div class="flex">
-            <div class="basis-1/5 2xl:basis-1/6">
+        <main class="flex relative">
+            <div class="2xl:w-1/6 fixed mt-14">
                 <div class="flex flex-col gap-y-2 p-4">
                     <div class="text-white font-bold mb-2">Menu</div>
                     <div class="grid grid-cols-3 gap-4 mb-6">
@@ -37,10 +37,10 @@ const props = defineProps({
                     <BuddyRequestCardLinear />
                 </div>
             </div>
-            <div class="basis-3/5 2xl:basis-4/6">
+            <div class="w-3/5 2xl:w-4/6 flex flex-col items-center mx-auto">
                 <slot />
             </div>
-            <div class="basis-1/5 2xl:basis-1/6 p-4">
+            <div class="w-1/5 2xl:w-1/6 p-4 fixed right-0 mt-14">
                 <div class="flex items-center justify-between mb-2">
                     <div class="text-white font-bold">Buddies</div>
                     <Link href="#" class="text-sm text-neutral-500 hover:text-white transition">
@@ -54,6 +54,6 @@ const props = defineProps({
                     <BuddyCard />
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 </template>

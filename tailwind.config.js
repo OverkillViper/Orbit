@@ -13,8 +13,8 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary     : "#141414",
-                secondary   : "#212121",
+                primary     : "#080808",
+                secondary   : "#151515",
                 accent      : "#252525",
             },
             fontFamily: {

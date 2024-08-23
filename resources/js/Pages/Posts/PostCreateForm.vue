@@ -42,26 +42,24 @@ const onUpload = () => {
                         <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
                             <div class="flex gap-2 ms-5">
                                 <button @click="chooseCallback()" class="text-neutral-400 hover:text-white transition"><span class="pi pi-images"></span></button>
-                                <button @click="clearCallback()" class="text-neutral-400 hover:text-white transition"><span class="pi pi-times"></span></button>
                             </div>
                         </div>
                     </template>
                     <template #content="{uploadedFiles, removeUploadedFileCallback}">
                         <div class="flex items-center my-2 gap-4">
                             <div class="relative" v-for="(file, index) of uploadedFiles" :key="file.name + file.type + file.size">
-                                <img role="presentation" :alt="file.name" :src="file.objectURL" class="w-12 h-12" />
+                                <img role="presentation" :alt="file.name" :src="file.objectURL" class="w-12 h-12 rounded-md" />
                                 <span @click="removeUploadedFileCallback(index)" class="pi pi-times absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 bg-white rounded-full" style="font-size: .8rem;"></span>
                             </div>
                         </div>
-                        
                     </template>
                 </FileUpload>
             </div>
         </form>
         <template #footer>
             <div class="flex items-center gap-x-4 justify-end w-full">
-                <Button label="Cancel" text severity="secondary" @click="visible = false" autofocus />
-                <Button label="Save" outlined severity="secondary" @click="visible = false" autofocus />
+                <Button label="Cancel" text severity="secondary" @click="visible = false"/>
+                <Button label="Save" outlined severity="secondary" @click="visible = false"/>
             </div>
         </template>
     </Dialog>
