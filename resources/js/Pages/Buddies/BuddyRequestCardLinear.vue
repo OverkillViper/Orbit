@@ -9,7 +9,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="bg-secondary rounded-md overflow-hidden">
+    <div class="bg-secondary rounded-xl overflow-hidden">
         <div class="flex border-l-4 border-l-neutral-500 transition p-3 w-full h-full">
             <Avatar icon="pi pi-user" size="large" shape="circle" />
             <div class="ms-4 flex-grow">

@@ -57,7 +57,7 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:active,
 input:-webkit-autofill:focus {
     background-color: #212121 !important;
-    color: #ff  f !important;
+    color: #fff !important;
     -webkit-box-shadow: 0 0 0 10px #212121 inset !important;
     -webkit-text-fill-color: #fff !important;
 }

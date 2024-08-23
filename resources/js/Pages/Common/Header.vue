@@ -32,7 +32,7 @@ const props = defineProps({
         <div class="flex items-center justify-end basis-1/5 2xl:basis-1/6 gap-x-4">
             <Notifications />
             <Link :href="route('logout')" method="post" as="button">
-                Log Out
+                <span class="pi pi-power-off text-gray-400 hover:text-white transition"></span>
             </Link>
         </div>
     </div>
