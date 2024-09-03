@@ -20,7 +20,7 @@ const search = () => {
 </script>
 
 <template>
-    <div class="fixed bg-primary z-10 w-full">
+    <div class="fixed bg-primary z-20 w-full">
         <Head :title="title" />
         <header class="flex items-center h-16 px-6 border border-t-0 border-l-0 border-r-0 border-b-neutral-800">
             <div class="basis-1/5 2xl:basis-1/6">
@@ -30,8 +30,8 @@ const search = () => {
                 </Link>
             </div>
             <div class="basis-3/5 2xl:basis-4/6 flex justify-between">
-                <form @submit.prevent="search" class="flex items-center flex-grow">
-                    <TextInput v-model="searchForm.query" class="w-1/3" placeholder="Lets find something"/>
+                <form @submit.prevent="search" class="flex items-center flex-grow ">
+                    <TextInput v-model="searchForm.query" class="w-2/3 2xl:w-1/3" placeholder="Lets find something"/>
                     <Button label="Search" icon="search" class="h-10 ms-4" type="submit"/>
                 </form>
                 <div class="flex items-center">

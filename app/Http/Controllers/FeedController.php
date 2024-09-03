@@ -9,36 +9,82 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\Post;
 use App\Models\Like;
+use App\Models\Gallery;
+use App\Models\Comment;
 
 class FeedController extends Controller
 {
-    public function index() {
 
-        $buddy_requests = Auth::check() ? BuddyRequest::where('recipient_id', '=', Auth::user()->id)->where('accepted', false)->with('sender')->take(3)->get()->map(function ($request) {
-            $createdAt = Carbon::parse($request->created_at);
-            $now = Carbon::now();
+    private function addTimeDifference($item)
+    {
+        $createdAt = Carbon::parse($item->created_at);
+        $now = Carbon::now();
 
-            $secondsDifference = $createdAt->diffInSeconds($now);
+        $secondsDifference = $createdAt->diffInSeconds($now);
 
-            if ($secondsDifference < 60) {
-                $request->time_difference = intval($secondsDifference) . ' seconds ago';
+        if ($secondsDifference < 60) {
+            $item->time_difference = intval($secondsDifference) . ' seconds ago';
+        } else {
+            $minutesDifference = $createdAt->diffInMinutes($now);
+            if ($minutesDifference < 60) {
+                $item->time_difference = intval($minutesDifference) . ' minutes ago';
             } else {
-                $minutesDifference = $createdAt->diffInMinutes($now);
-                if ($minutesDifference < 60) {
-                    $request->time_difference = intval($minutesDifference) . ' minutes ago';
+                $hoursDifference = $createdAt->diffInHours($now);
+                if ($hoursDifference < 24) {
+                    $item->time_difference = intval($hoursDifference) . ' hours ago';
                 } else {
-                    $hoursDifference = $createdAt->diffInHours($now);
-                    if ($hoursDifference < 24) {
-                        $request->time_difference = intval($hoursDifference) . ' hours ago';
-                    } else {
-                        $daysDifference = $createdAt->diffInDays($now);
-                        $request->time_difference = intval($daysDifference) . ' days ago';
-                    }
+                    $daysDifference = $createdAt->diffInDays($now);
+                    $item->time_difference = intval($daysDifference) . ' days ago';
                 }
             }
+        }
 
-            return $request;
-        }) : null;
+        return $item;
+    }
+
+    private function getComments(Post $post) {
+        $comments = Comment::where('post_id', $post->id)
+        ->with(['replies' => function ($query) {
+            $query->with(['author', 'gallery', 'likes']) // Load related data for replies
+                ->withCount('likes')
+                ->withCount(['likes as isLiked' => function ($query) {
+                    $query->where('user_id', Auth::id());
+                }]);
+        }, 'author', 'gallery', 'likes', 'post'])
+        ->withCount('likes')
+        ->withCount(['likes as isLiked' => function ($query) {
+            $query->where('user_id', Auth::id());
+        }])
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(function ($comment) {
+            $comment = $this->addTimeDifference($comment);
+            $comment->isLiked = $comment->isLiked > 0;
+
+            $comment->replies = $comment->replies->map(function ($reply) {
+                $reply = $this->addTimeDifference($reply);
+                $reply->isLiked = $reply->isLiked > 0;
+                return $reply;
+            });
+
+            return $comment;
+        });
+
+        return $comments;
+    }
+
+    public function index() {
+
+        $buddy_requests = Auth::check() ?
+            BuddyRequest::where('recipient_id', '=', Auth::user()->id)
+                        ->where('accepted', false)
+                        ->with('sender')
+                        ->take(3)
+                        ->get()
+                        ->map(function ($request) {
+                            $request = $this->addTimeDifference($request);
+                            return $request;
+                        }) : null;
 
         $buddies = BuddyRequest::where('accepted', true)
                                ->where(function ($query) {
@@ -53,41 +99,17 @@ class FeedController extends Controller
                                });
 
         $posts = Post::with(['author', 'galleries'])
-                               ->withCount('likes')
-                               ->withCount(['likes as isLiked' => function ($query) {
-                                   $query->where('user_id', Auth::id());
-                               }])
-                               ->orderBy('created_at', 'desc')
-                               ->get()
-                               ->map(function ($post) {
-                                   // Calculate time difference
-                                   $createdAt = Carbon::parse($post->created_at);
-                                   $now = Carbon::now();
-                           
-                                   $secondsDifference = $createdAt->diffInSeconds($now);
-                           
-                                   if ($secondsDifference < 60) {
-                                       $post->time_difference = intval($secondsDifference) . ' seconds ago';
-                                   } else {
-                                       $minutesDifference = $createdAt->diffInMinutes($now);
-                                       if ($minutesDifference < 60) {
-                                           $post->time_difference = intval($minutesDifference) . ' minutes ago';
-                                       } else {
-                                           $hoursDifference = $createdAt->diffInHours($now);
-                                           if ($hoursDifference < 24) {
-                                               $post->time_difference = intval($hoursDifference) . ' hours ago';
-                                           } else {
-                                               $daysDifference = $createdAt->diffInDays($now);
-                                               $post->time_difference = intval($daysDifference) . ' days ago';
-                                           }
-                                       }
-                                   }
-                           
-                                   // Convert the like count to a boolean
-                                   $post->isLiked = $post->isLiked > 0;
-                           
-                                   return $post;
-                               });
+                    ->withCount('likes')
+                    ->withCount(['likes as isLiked' => function ($query) {
+                        $query->where('user_id', Auth::id());
+                    }])
+                    ->orderBy('created_at', 'desc')
+                    ->get()
+                    ->map(function ($post) {
+                        $post = $this->addTimeDifference($post);
+                        $post->isLiked = $post->isLiked > 0;
+                        return $post;
+                    });
 
         $context = [
             'posts'          => $posts,
@@ -135,6 +157,106 @@ class FeedController extends Controller
             $post->likes()->create([
                 'user_id' => $user_id,
             ]);
+        }
+
+        return redirect()->back();
+    }
+
+    public function toggleLikeComment(Comment $comment) {
+
+        $user_id = Auth::id();
+
+        $existingLike = Like::where('likeable_id', $comment->id)
+            ->where('likeable_type', Comment::class)
+            ->where('user_id', $user_id)
+            ->first();
+
+        if($existingLike) {
+            $existingLike->delete();
+        } else {
+            $comment->likes()->create([
+                'user_id' => $user_id,
+            ]);
+        }
+
+        return redirect()->back();
+    }
+
+    public function postDetails(Request $request, Post $post) {
+
+        $post->load(['author', 'galleries'])
+            ->loadCount('likes')
+            ->loadCount(['likes as isLiked' => function ($query) {
+                $query->where('user_id', Auth::id());
+            }]);
+
+        // Calculate time difference
+        $post = $this->addTimeDifference($post);
+
+        $comments = Comment::where('post_id', $post->id)->with(['replies', 'author'])->orderBy('created_at', 'desc')->get();
+
+        // Convert the isLiked count to a boolean
+        $post->isLiked = $post->isLiked > 0;
+
+        $context = [
+            'post' => $post,
+            'comments' => $comments
+        ];
+
+        return Inertia::render('Posts/PostDetails', $context);
+    }
+
+    public function postImageDetails(Post $post, Gallery $image = null)
+    {
+        // Load post details with necessary relationships
+        $post->load(['author', 'galleries'])
+            ->loadCount('likes')
+            ->loadCount(['likes as isLiked' => function ($query) {
+                $query->where('user_id', Auth::id());
+            }]);
+
+        // Calculate time difference (same as above)
+        $post = $this->addTimeDifference($post);
+
+        $post->isLiked = $post->isLiked > 0;
+
+        // Determine current image index for navigation
+        $currentimageIndex = $image ? $post->galleries->search(fn($img) => $img->id === $image->id) : 0;
+        $previousimage = $post->galleries[$currentimageIndex - 1] ?? null;
+        $nextimage = $post->galleries[$currentimageIndex + 1] ?? null;
+
+        $comments = $this->getComments($post);
+
+        $context = [
+            'post'          => $post,
+            'currentimage'  => $image ?? $post->galleries()->first(),
+            'previousimage' => $previousimage,
+            'nextimage'     => $nextimage,
+            'comments'      => $comments
+        ];
+
+        // Return post details with the specific image
+        return Inertia::render('Posts/PostDetails', $context);
+    }
+
+    public function postComment(Request $request, Post $post) {
+
+        $newComment = Comment::create([
+            'parent_id' => $request->parent_id,
+            'post_id'   => $post->id,
+            'content'   => $request->content,
+            'author_id' => Auth::id(),
+        ]);
+
+        if ($request->hasFile('image')) {
+            foreach ($request->file('image') as $image) {
+                $path = $image->store('images/comments', 'public');
+
+                // Create a new Gallery entry
+                $newComment->galleries()->create([
+                    'path' => $path,
+                ]);
+            }
         }
 
         return redirect()->back();

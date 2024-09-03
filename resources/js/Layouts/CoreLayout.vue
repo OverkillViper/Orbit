@@ -11,7 +11,7 @@ const props = defineProps({
     <div class="min-h-screen bg-primary">
         <Header :title="title"/>
         <main class="flex relative">
-            <div class="2xl:w-1/6 fixed mt-14">
+            <div class="w-1/5 2xl:w-1/6 fixed mt-14">
                 <slot name="leftSidebar"/>
             </div>
             <div class="w-3/5 2xl:w-4/6 flex flex-col items-center mx-auto pt-20">

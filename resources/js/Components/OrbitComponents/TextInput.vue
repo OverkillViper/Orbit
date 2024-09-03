@@ -11,6 +11,7 @@ const props = defineProps({
     placeholder : String,
     label       : String,
     password    : Boolean,
+    background  : String,
 });
 
 const type = ref(props.password ? 'password' : 'text');
@@ -22,13 +23,13 @@ const togglePassword = () => {
 </script>
 
 <template>
-    <div>
+    <div class="bg-transparent border-0">
         <div v-if="label" class="text-xs text-gray-400 uppercase font-medium mb-1">{{ label }}</div>
-        <div class="bg-secondary px-3 h-10 flex items-center rounded-lg border border-transparent hover:border-neutral-800 transition">
+        <div class="px-3 h-10 flex items-center rounded-lg border border-transparent hover:border-neutral-800 transition" :class="background ? background : 'bg-secondary'">
             <div v-if="icon" class="">
                 <span class="pi text-gray-500 w-2 h-2" :class="'pi-' + icon" style="font-size: 0.8rem;"></span>
             </div>
-            <input :type="type" class="border-0 bg-secondary focus:border-0 ring-0 focus:ring-0 font-medium text-sm p-0 flex-grow m-0" v-model="model" :placeholder="placeholder" :class="icon ? 'ms-6' : ''">
+            <input :type="type" class="border-0 bg-transparent focus:border-0 ring-0 focus:ring-0 font-medium text-sm p-0 flex-grow m-0" v-model="model" :placeholder="placeholder" :class="icon ? 'ms-6' : ''">
             <div v-if="password">
                 <span class="pi text-gray-400" :class="type == 'password' ? 'pi-eye' : 'pi-eye-slash'" @click="togglePassword"></span>
             </div>

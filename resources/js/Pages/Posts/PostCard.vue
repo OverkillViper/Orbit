@@ -6,7 +6,6 @@ import { Link } from '@inertiajs/vue3';
 const collapsed = ref(true);
 
 const props = defineProps({
-    grid : [String, Number],
     post : Object,
 });
 
@@ -23,11 +22,18 @@ const props = defineProps({
         </div>
         <div class="flex items-center gap-x-4 me-2">
             <button class="text-neutral-400 hover:text-white transition" v-tooltip.bottom="'Copy Post'"><span class="pi pi-clipboard"></span></button>
-            <Link :href="route('posts.likes.toggle', post.id)" as="button" method="post" class="text-neutral-400 hover:text-white transition" v-tooltip.bottom="post.isLiked ? 'No Cheers' : 'Cheers'"><span class="pi" :class="post.isLiked ? 'pi-heart-fill' : 'pi-heart'"></span></Link>
+            <Link :href="route('posts.likes.toggle', post.id)" as="button" method="post" class="text-neutral-400 hover:text-white transition" v-tooltip.bottom="post.isLiked ? 'Cheered' : 'Cheers'"><span class="pi" :class="post.isLiked ? 'pi-heart-fill' : 'pi-heart'"></span></Link>
         </div>
     </div>
-    <div class="grid gap-4" :class="'grid-cols-' + grid">
-        <img :src="'/storage/' + gallery.path" alt="post_image" class="rounded-xl w-full aspect-square object-cover" v-for="gallery in post.galleries" :key="gallery.id">
+    <div class="grid gap-4 relative" v-if="post.galleries.length" :class="post.galleries.length < 4 ? 'grid-cols-' + post.galleries.length : 'grid-cols-2'">
+        <Link :href="route('post.details.images', [post = post.id, image = gallery.id])" v-for="gallery in post.galleries.slice(0, 4)" :key="gallery.id" >
+            <img :src="'/storage/' + gallery.path" alt="post_image" class="rounded-xl w-full aspect-square object-cover">
+            <div class="absolute bottom-0 z-10 right-0 w-1/2 h-1/2 flex pt-2 ps-2" v-if="post.galleries.length > 4">
+                <div class="bg-neutral-800 bg-opacity-75 w-full rounded-xl flex items-center justify-center text-4xl font-bold">
+                    + {{ post.galleries.length - 4 }}
+                </div>
+            </div>
+        </Link>
     </div>
     <div class="text-sm" :class="{'line-clamp-2' : collapsed}">
         {{ post.content }}
@@ -39,10 +45,10 @@ const props = defineProps({
                 <span class="me-1">{{ post.likes_count }}</span>
                 <span>Cheers</span>
             </div>
-            <div class="flex items-center cursor-default text-neutral-400 hover:text-white transition ">
+            <Link :href="post.galleries.length ? route('post.details.images', post.id) : route('post.details', post.id)" class="flex items-center cursor-default text-neutral-400 hover:text-white transition ">
                 <span class="pi pi-comments" style="font-size: 0.7rem;"></span>
                 <span class="text-sm ms-2">Comments</span>
-            </div>
+            </Link>
         </div>
         
         <div class="text-xs text-neutral-400 hover:text-white transition cursor-default">

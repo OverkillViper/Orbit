@@ -39,7 +39,7 @@ const props = defineProps({
         <PostCreateForm :user="auth.user"/>
 
         <div class="mt-4 flex flex-col gap-y-4">
-            <PostCard v-for="post in posts" :key="post.id" :post="post" :grid="post.galleries.length > 4 ? 4 : post.galleries.length"/>
+            <PostCard v-for="post in posts" :key="post.id" :post="post"/>
         </div>
     </div>
     

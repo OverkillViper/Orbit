@@ -26,7 +26,6 @@ const onSelectedFiles = (event) => {
     const files = event.files;
     
     postForm.images = files;
-    console.log(postForm.images);
 };
 
 const createPost = () => {
