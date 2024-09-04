@@ -3,6 +3,7 @@ import UserAvatar from '@/Components/OrbitComponents/UserAvatar.vue';
 import CommentForm from './CommentForm.vue';
 import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import CommentContext from './CommentContext.vue';
 
 const props = defineProps({
     auth    : Object,
@@ -20,9 +21,15 @@ const showReplies = ref(false);
             <UserAvatar :user="comment.author" :href="route('dashboard')"/>
         </div>
         <div class="flex flex-col gap-y-2 w-full">
-            <div class="text-sm font-medium">
-                {{ comment.author.name }}
+            <div class="flex items-center justify-between">
+                <div class="text-sm font-medium">
+                    {{ comment.author.name }}
+                </div>
+                <div>
+                    <CommentContext :comment="comment" v-if="comment.author.id === auth.user.id"/>
+                </div>
             </div>
+            
             <div class="bg-accent p-3 rounded-lg flex-grow text-sm" v-if="comment.content">
                 {{ comment.content }}
             </div>
@@ -38,7 +45,8 @@ const showReplies = ref(false);
                 <button class="hover:underline" @click="replying = !replying">Reply</button>
                 <button class="hover:underline" @click="showReplies = !showReplies" v-if="comment.replies && comment.replies.length">Show replies</button>
             </div>
-            <CommentForm :auth="auth" :post="comment.post" :parent="comment" v-show="replying"/>
+
+            <CommentForm :auth="auth" :post="comment.post_id" :parent="comment" v-show="replying"/>
 
             <div v-if="comment.replies" v-show="showReplies">
                 <Comment v-for="reply in comment.replies" :key="reply.id" :comment="reply" :auth="auth"/>

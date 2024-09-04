@@ -17,3 +17,9 @@ const props = defineProps({
         <Avatar :shape="shape" class="p-overlay-badge w-full" icon="pi pi-user" :size="size" v-else />
     </Link>
 </template>
+
+<style>
+.p-avatar img {
+    object-fit: cover
+}
+</style>

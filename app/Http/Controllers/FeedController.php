@@ -11,6 +11,7 @@ use App\Models\Post;
 use App\Models\Like;
 use App\Models\Gallery;
 use App\Models\Comment;
+use Illuminate\Support\Facades\Storage;
 
 class FeedController extends Controller
 {
@@ -142,6 +143,12 @@ class FeedController extends Controller
         return redirect()->route('profile.posts');
     }
 
+    public function deletePost(Post $post) {
+        $post->delete();
+
+        return redirect()->back();
+    }
+
     public function toggleLikePost(Post $post) {
 
         $user_id = Auth::id();
@@ -158,6 +165,12 @@ class FeedController extends Controller
                 'user_id' => $user_id,
             ]);
         }
+
+        return redirect()->back();
+    }
+
+    public function removePostImage(Gallery $gallery) {
+        $gallery->delete();
 
         return redirect()->back();
     }
@@ -193,7 +206,7 @@ class FeedController extends Controller
         // Calculate time difference
         $post = $this->addTimeDifference($post);
 
-        $comments = Comment::where('post_id', $post->id)->with(['replies', 'author'])->orderBy('created_at', 'desc')->get();
+        $comments = $this->getComments($post);
 
         // Convert the isLiked count to a boolean
         $post->isLiked = $post->isLiked > 0;
@@ -258,6 +271,16 @@ class FeedController extends Controller
                 ]);
             }
         }
+
+        return redirect()->back();
+    }
+
+    public function updatePost(Request $request, Post $post) {
+        dd($request);
+    }
+
+    public function deleteComment(Comment $comment) {
+        $comment->delete();
 
         return redirect()->back();
     }

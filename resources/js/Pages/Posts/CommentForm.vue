@@ -8,7 +8,7 @@ import UserAvatar from '@/Components/OrbitComponents/UserAvatar.vue';
 
 const props = defineProps({
     auth    : Object,
-    post    : Object,
+    post    : Number,
     parent  : Object,
 })
 
@@ -23,7 +23,7 @@ const commentImagePreview = ref();
 
 const onSelectedFiles = (event) => {
     const files = event.files;
-    
+
     commentImagePreview.value = files[0].objectURL
     commentForm.image = files;
 };
@@ -35,13 +35,20 @@ const cancelUpload = () => {
 
 const postComment = () => {
     commentForm.parent_id   = props.parent  ? props.parent.id  : null;
-    commentForm.post(route('comment.store', props.post.id));
+    commentForm.post(route('comment.store', props.post), {
+        onFinish: () => {
+            commentForm.content     = '';
+            commentForm.image       = null;
+            commentForm.post_id     = '';
+            commentForm.parent_id   = null;
+        },
+    });
 }
 
 </script>
 
 <template>
-    <form @submit.prevent="postComment" class="w-full">
+    <form @submit.prevent="postComment" class="w-full" id="commentForm">
         <div class="flex gap-x-2">
             <div class="mt-1">
                 <UserAvatar :user="auth.user" :href="route('dashboard')"/>

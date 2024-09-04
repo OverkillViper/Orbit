@@ -7,8 +7,10 @@ import { ref } from 'vue';
 import Textarea from 'primevue/textarea';
 import FileUpload from 'primevue/fileupload';
 import SelectButton from 'primevue/selectbutton';
+import ProgressSpinner from 'primevue/progressspinner';
 
 const visible = ref(false);
+const loading = ref(false);
 
 const postForm = useForm({
     content     : '',
@@ -29,11 +31,14 @@ const onSelectedFiles = (event) => {
 };
 
 const createPost = () => {
+    loading.value = true;
+
     postForm.post(route('post.store'), {
         onFinish: () => {
             postForm.content = '';
             postForm.images  = null;
             postForm.visibility = 'public';
+            loading.value = false;
         }
     })
 }
@@ -75,11 +80,13 @@ const createPost = () => {
                             </div>
                         </div>
                     </template>
-                    <template #content="{files, removeUploadedFileCallback}">
+                    <template #content="{files, removeFileCallback}">
                         <div class="flex items-center my-2 gap-4">
                             <div class="relative" v-for="(file, index) of files" :key="file.name + file.type + file.size">
                                 <img role="presentation" :alt="file.name" :src="file.objectURL" class="w-12 h-12 rounded-md" />
-                                <span @click="removeUploadedFileCallback(index)" class="pi pi-times absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 bg-white rounded-full" style="font-size: .8rem;"></span>
+                                <button @click="removeFileCallback(index)">
+                                    <span class="pi pi-times absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 bg-white rounded-full" style="font-size: .8rem;"></span>
+                                </button>
                             </div>
                         </div>
                     </template>
@@ -89,7 +96,10 @@ const createPost = () => {
         <template #footer>
             <div class="flex items-center gap-x-4 justify-end w-full">
                 <Button label="Cancel" @click="visible = false"/>
-                <Button label="Post" @click="createPost"/>
+                <Button label="Post" @click="createPost" v-if="loading === false"/>
+                <div v-else>
+                    <ProgressSpinner style="width: 15px; height: 15px" strokeWidth="3"/>
+                </div>
             </div>
         </template>
     </Dialog>

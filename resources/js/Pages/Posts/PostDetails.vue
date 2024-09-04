@@ -76,7 +76,7 @@ const showComments = ref(true);
                 </div>
 
                 <div class="my-4">
-                    <CommentForm :auth="auth" :post="post" />
+                    <CommentForm :auth="auth" :post="post.id" />
                 </div>
                 
                 <hr class="border-neutral-700">
