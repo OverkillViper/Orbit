@@ -38,6 +38,7 @@ const createPost = () => {
             postForm.content = '';
             postForm.images  = null;
             postForm.visibility = 'public';
+            visible.value = false;
             loading.value = false;
         }
     })

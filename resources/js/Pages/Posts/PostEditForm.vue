@@ -7,6 +7,7 @@ import SelectButton from 'primevue/selectbutton';
 import FileUpload from 'primevue/fileupload';
 import UserAvatar from '@/Components/OrbitComponents/UserAvatar.vue';
 import Button from '@/Components/OrbitComponents/Button.vue';
+import ProgressSpinner from 'primevue/progressspinner';
 
 const props = defineProps({
     post : Object,
@@ -34,11 +35,9 @@ const onSelectedFiles = (event) => {
 };
 
 const updatePost = () => {
-    postForm.post(route('post.update'), {
+    postForm.put(route('post.update', props.post.id), {
         onFinish: () => {
-            postForm.content = '';
-            postForm.images  = null;
-            postForm.visibility = 'public';
+            visible.value = false;
         }
     })
 }
@@ -94,7 +93,11 @@ const updatePost = () => {
         <template #footer>
             <div class="flex items-center gap-x-4 justify-end w-full">
                 <Button label="Cancel" @click="visible = false"/>
-                <Button label="Save" @click="updatePost"/>
+                <div v-if="postForm.processing">
+                    <ProgressSpinner style="width: 15px; height: 15px" strokeWidth="3"/>
+                </div>
+                <Button label="Save" @click="updatePost" v-else/>
+                
             </div>
         </template>
     </Dialog>

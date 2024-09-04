@@ -26,7 +26,7 @@ class MyProfileController extends Controller
 
             $data['avatar'] = $avatarPath;
 
-            $updatedUser = Auth::user()->update($data);
+            Auth::user()->update($data);
 
             return redirect()->back();
         }

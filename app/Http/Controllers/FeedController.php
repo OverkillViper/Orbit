@@ -144,6 +144,13 @@ class FeedController extends Controller
     }
 
     public function deletePost(Post $post) {
+
+        $galleries = Gallery::where('imageable_type', Post::class)->where('imageable_id', $post->id)->get();
+
+        foreach ($galleries as $gallery) {
+            $gallery->delete();
+        }
+
         $post->delete();
 
         return redirect()->back();
@@ -276,7 +283,24 @@ class FeedController extends Controller
     }
 
     public function updatePost(Request $request, Post $post) {
-        dd($request);
+        $post->update([
+            'content'    => $request->content,
+            'visibility' => $request->visibility,
+            'group_id'   => $request->group_id,
+        ]);
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('images/posts', 'public');
+
+                // Create a new Gallery entry
+                $post->galleries()->create([
+                    'path' => $path,
+                ]);
+            }
+        }
+
+        return redirect()->back();
     }
 
     public function deleteComment(Comment $comment) {
