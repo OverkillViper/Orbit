@@ -118,4 +118,8 @@ const showComments = ref(true);
     display: none;
 }
 
+.p-fileupload button span {
+    display: block;
+}
+
 </style>

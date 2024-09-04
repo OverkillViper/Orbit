@@ -38,7 +38,7 @@ const search = () => {
                     <NavbarItem icon="user"        label="My Profile" :href="route('profile.posts')"/>
                     <NavbarItem icon="comment"     label="Messages"   :href="route('dashboard')"/>
                     <NavbarItem icon="face-smile"  label="Friends"    :href="route('profile.buddies')"/>
-                    <NavbarItem icon="users"       label="Groups"     :href="route('dashboard')"/>
+                    <NavbarItem icon="users"       label="Groups"     :href="route('groups')"/>
                     <NavbarItem icon="calendar"    label="Events"     :href="route('dashboard')"/>
                     <NavbarItem icon="cog"         label="Settings"   :href="route('dashboard')"/>
                 </div>

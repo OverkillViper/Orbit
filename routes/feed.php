@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FeedController;
+use App\Http\Controllers\GroupController;
 
 Route::middleware('auth')->group(function () {
     Route::get('/home',                                [FeedController::class, 'index'])->name('dashboard');
@@ -21,4 +22,7 @@ Route::middleware('auth')->group(function () {
     // Comments
     Route::post('/post/{post}/create-comment',         [FeedController::class, 'postComment'])->name('comment.store');
     Route::post('/post/comment/{comment}/remove',      [FeedController::class, 'deleteComment'])->name('comment.delete');
+
+    // Groups
+    Route::get('/groups',                              [GroupController::class, 'groups'])->name('groups');
 });

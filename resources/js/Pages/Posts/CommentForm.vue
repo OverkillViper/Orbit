@@ -65,7 +65,7 @@ const postComment = () => {
         </div>
         <div class="flex justify-between items-center mt-2">
             <div class="flex overflow-hidden flex-grow">
-                <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" :multiple="false" @select="onSelectedFiles" v-if="commentImagePreview == null"/>
+                <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" :multiple="false" @select="onSelectedFiles" v-if="commentImagePreview == null" chooseLabel="Add Image" />
             </div>
             <Button label="Comment" icon="send" type="submit"/>
         </div>
