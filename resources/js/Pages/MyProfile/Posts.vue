@@ -23,7 +23,7 @@ const props = defineProps({
         <div class="basis-3/5 flex flex-col gap-y-6">
             <PostCreateForm :user="auth.user"/>
 
-            <PostCard v-for="post in posts" :key="post.id" :post="post" :grid="post.galleries.length > 4 ? 4 : post.galleries.length" showgroup/>
+            <PostCard v-for="post in posts" :key="post.id" :post="post" :grid="post.galleries.length > 4 ? 4 : post.galleries.length" showgroup :auth="auth"/>
         </div>
     </div>
     

@@ -33,7 +33,7 @@ const props = defineProps({
                         <div>{{ group.visibility }} group</div>
                         <span>&#183;</span>
                         <div>
-                            0 Members
+                            {{ group.member_count }} Members
                         </div>
                     </div>
                 </div>
@@ -41,8 +41,8 @@ const props = defineProps({
                     <Link :href="route('group.delete', group.id)" as="button" method="delete" v-if="group.admin_id === auth.user.id">
                         <Button label="Delete Group" icon="trash" background="bg-red-700" />
                     </Link>
-                    <Link href="#" v-if="group.admin_id === auth.user.id">
-                        <Button label="Member Requests"/>
+                    <Link :href="route('group.members.requests', group.id)" v-if="group.admin_id === auth.user.id">
+                        <Button :label="group.requests + ' Member Requests'"/>
                     </Link>
                     <Link href="#">
                         <Button label="Leave group" icon="sign-out"/>

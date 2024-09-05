@@ -16,7 +16,7 @@ const props = defineProps({
     <div class="w-3/4 mx-auto flex flex-col gap-y-4 pb-4">
         <PostCreateForm :user="auth.user" :group="group"/>
 
-        <PostCard v-for="post in posts" :key="post.id" :post="post"/>
+        <PostCard v-for="post in posts" :key="post.id" :post="post" :auth="auth"/>
     </div>
 </GroupLayout>
 </template>

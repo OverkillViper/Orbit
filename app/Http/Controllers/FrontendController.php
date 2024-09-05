@@ -43,7 +43,7 @@ class FrontendController extends Controller
             'seen' => true,
         ]);
 
-        return redirect()->route($notification->href);
+        return redirect($notification->href);
     }
 
     public function deleteNotification(Notification $notification) {

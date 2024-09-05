@@ -29,6 +29,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/group/create',                       [GroupController::class, 'createGroup'])->name('group.create');
     Route::delete('/group/{group}/delete',             [GroupController::class, 'deleteGroup'])->name('group.delete');
     Route::get('/group/{group}/posts',                 [GroupController::class, 'groupPosts'])->name('group.posts');
-    Route::get('group/{group}/members',                [GroupController::class, 'groupMembers'])->name('group.members');
-    Route::post('group/{group}/join',                  [GroupController::class, 'joinGroup'])->name('group.join');
+    Route::get('/group/{group}/members',               [GroupController::class, 'groupMembers'])->name('group.members');
+    Route::post('/group/{group}/join',                 [GroupController::class, 'joinGroup'])->name('group.join');
+    Route::post('/group/{group}/cancel-request',       [GroupController::class, 'cancelJoinRequest'])->name('group.request.cancel');
+    Route::get('/group/{group}/requests',              [GroupController::class, 'memberRequests'])->name('group.members.requests');
+    Route::post('/group/request/{request}/accept',     [GroupController::class, 'acceptJoinRequest'])->name('group.members.request.accept');
+    Route::post('/group/request/{request}/decline',    [GroupController::class, 'declineJoinRequest'])->name('group.members.request.decline');
 });

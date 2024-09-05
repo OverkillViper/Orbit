@@ -12,7 +12,7 @@ const props = defineProps({
 
 <template>
 <GroupLayout :group="group" :auth="auth" selected="members">
-    <div class="grid grid-cols-3 pb-4">
+    <div class="grid grid-cols-3 2xl:grid-cols-4 pb-4 gap-4">
         <PeopleCard v-for="member in members" :key="member.id" :user="member.member"/>
     </div>
 </GroupLayout>

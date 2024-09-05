@@ -46,7 +46,13 @@ const showComments = ref(true);
                 <div class="flex items-center">
                     <UserAvatar :user="post.author" :href="route('dashboard')" size="large"/>
                     <div class="ms-2">
-                        <div class="text-white">{{ post.author.name }}</div>
+                        <div class="flex items-center gap-x-2">
+                            <div class="text-white font-semibold">{{ post.author.name }}</div>
+                            <span class="pi pi-angle-right" style="font-size: 0.8rem;" v-if="post.group"></span>
+                            <Link :href="route('group.posts', post.group.id)" v-if="post.group" class="hover:underline">
+                                {{ post.group.name }}
+                            </Link>
+                        </div>
                         <div class="text-xs text-neutral-400">{{ post.time_difference }}</div>
                     </div>
                 </div>

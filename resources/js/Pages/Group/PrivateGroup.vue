@@ -3,10 +3,19 @@ import Header from '@/Pages/Common/Header.vue';
 import UpdateCoverPhoto from '@/Pages/MyProfile/UpdateCoverPhoto.vue';
 import { Link } from '@inertiajs/vue3';
 import Button from '@/Components/OrbitComponents/Button.vue';
+import { watch, ref } from 'vue';
+import ProgressSpinner from 'primevue/progressspinner';
+
+const loading = ref(false);
 
 const props = defineProps({
     group       : Object,
+    requested   : Boolean
 })
+
+watch(() => props.requested, requested => {
+    loading.value = false;
+});
 
 </script>
 
@@ -17,11 +26,8 @@ const props = defineProps({
         <main class="flex-grow mt-20 flex flex-col items-center">
             <div class="w-3/4">
                 <div class="relative">
-                    <img :src="'/storage/' + group.cover_photo" alt="cover_photo" class="h-64 object-cover w-full rounded-xl" v-if="auth.user.cover_photo">
+                    <img :src="'/storage/' + group.cover_photo" alt="cover_photo" class="h-64 object-cover w-full rounded-xl" v-if="group.cover_photo">
                     <img src="/images/background.png" alt="cover_photo" class="h-64 object-cover w-full rounded-xl" v-else>
-                    <div class="absolute top-0 right-0 m-2">
-                        <UpdateCoverPhoto />
-                    </div>
                 </div>
             </div>
             <div class="w-3/4 py-4 flex items-center justify-between">
@@ -31,40 +37,26 @@ const props = defineProps({
                         <div>{{ group.visibility }} group</div>
                         <span>&#183;</span>
                         <div>
-                            0 Members
+                            {{ group.member_count }} Members
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center gap-x-4">
-                    <Link :href="route('group.delete', group.id)" as="button" method="delete" v-if="group.admin_id === auth.user.id">
-                        <Button label="Delete Group" icon="trash" background="bg-red-700" />
+                <div v-if="loading">
+                    <ProgressSpinner style="width: 15px; height: 15px" strokeWidth="4"/>
+                </div>
+                <div class="flex items-center gap-x-4" v-else>
+                    <Link :href="route('group.request.cancel', group.id)" v-if="requested" as="button" method="post" @click="loading = true">
+                        <Button label="Cancel Request" icon="times"/>
                     </Link>
-                    <Link href="#" v-if="group.admin_id === auth.user.id">
-                        <Button label="Member Requests"/>
-                    </Link>
-                    <Link href="#">
-                        <Button label="Leave group" icon="sign-out"/>
+                    <Link :href="route('group.join', group.id)" v-else as="button" method="post" @click="loading = true">
+                        <Button label="Request to Join" icon="sign-in"/>
                     </Link>
                 </div>
             </div>
-            <div class="flex w-3/4 gap-x-2 mt-4">
-                <div class="basis-1/4 flex flex-col gap-y-4">
-                    <Link :href="route('group.posts', group.id)" class="flex items-center hover:text-white transition-all gap-x-2" :class="selected === 'posts' ? 'text-white' : 'text-neutral-400'">
-                        <span class="pi pi-receipt" style="font-size: 0.95rem;"></span>
-                        <span class="text-sm">Posts</span>
-                    </Link>
-                    <Link :href="route('group.members', group.id)" class="flex items-center hover:text-white transition-all gap-x-2" :class="selected === 'members' ? 'text-white' : 'text-neutral-400'">
-                        <span class="pi pi-users" style="font-size: 0.95rem;"></span>
-                        <span class="text-sm">Members</span>
-                    </Link>
-                    <Link :href="route('dashboard')" class="flex items-center hover:text-white transition-all gap-x-2" :class="selected === 'about' ? 'text-white' : 'text-neutral-400'">
-                        <span class="pi pi-info-circle" style="font-size: 0.95rem;"></span>
-                        <span class="text-sm">About</span>
-                    </Link>
-                </div>
-                <div class="basis-3/4">
-                    <slot/>
-                </div>
+
+            <div class="flex text-neutral-400 text-sm gap-x-4 items-center">
+                <span class="pi pi-exclamation-triangle"></span>
+                <span>Posts and group members are hidden because this group is private</span>
             </div>
         </main>
     </div>

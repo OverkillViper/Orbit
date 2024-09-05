@@ -6,6 +6,8 @@ use App\Models\Group;
 use App\Models\Post;
 use App\Models\Gallery;
 use App\Models\GroupMember;
+use App\Models\Notification;
+
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -25,12 +27,12 @@ class GroupController extends Controller
             'name'          => $request->name,
             'admin_id'      => Auth::id(),
             'visibility'    => $request->visibility,
-            'status'        => 'approved',
         ]);
 
         GroupMember::create([
             'member_id' => Auth::id(),
             'group_id'  => $group->id,
+            'status'    => 'approved',
         ]);
 
         return redirect()->route('group.posts', $group->id);
@@ -52,6 +54,7 @@ class GroupController extends Controller
         $groups = Group::withCount('members')->orderBy('created_at', 'desc')->get()->map(function ($group) {
             $is_member = GroupMember::where('status', 'approved')->where('group_id', $group->id)->where('member_id', Auth::id())->exists();
             $group->is_member = $is_member;
+            $group->loadCount('members');
 
             return $group;
         });
@@ -62,6 +65,20 @@ class GroupController extends Controller
 
         return Inertia::render('Group/AllGroups', $context);
     }
+
+    private function loadGroup(Group $group) {
+        $is_member = GroupMember::where('status', 'approved')->where('group_id', $group->id)->where('member_id', Auth::id())->exists();
+        $requests  = GroupMember::where('status', 'pending')->where('group_id', $group->id)->count();
+        $member_count = GroupMember::where('status', 'approved')->where('group_id', $group->id)->count();
+
+
+        $group->is_member     = $is_member;
+        $group->requests      = $requests;
+        $group->member_count  = $member_count;
+
+        return $group;
+    }
+
     public function groupPosts(Group $group) {
 
         $posts = Post::where('group_id', $group->id)
@@ -78,26 +95,70 @@ class GroupController extends Controller
                         return $post;
                     });
 
-        $is_member = GroupMember::where('status', 'approved')->where('group_id', $group->id)->where('member_id', Auth::id())->exists();
-        $group->is_member = $is_member;
+        $group = $this->loadGroup($group);
+        
+        if($group->visibility === 'public' || $group->is_member) {
+            $context = [
+                'posts' => $posts,
+                'group' => $group,
+            ];
+    
+            return Inertia::render('Group/GroupPosts', $context);
+        } else {
+
+            $requested = GroupMember::where('status', 'pending')->where('group_id', $group->id)->where('member_id', Auth::id())->exists();
+
+            $context = [
+                'group' => $group,
+                'requested' => $requested,
+            ];
+
+            return Inertia::render('Group/PrivateGroup', $context);
+        }
+    }
+
+    public function memberRequests(Group $group) {
+        $requests = GroupMember::with('member')->where('status', 'pending')->where('group_id', $group->id)->get()->map(
+            function ($request) {
+                $request = TimeHelper::addTimeDifference($request);
+
+                return $request;
+            }
+        );
+
+        $group = $this->loadGroup($group);
 
         $context = [
-            'posts' => $posts,
             'group' => $group,
+            'requests' => $requests,
         ];
 
-        return Inertia::render('Group/GroupPosts', $context);
+        return Inertia::render('Group/MemberRequests', $context);
     }
 
     public function groupMembers(Group $group) {
         $members = GroupMember::with('member')->where('group_id', $group->id)->where('status','approved')->orderBy('created_at', 'desc')->get();
 
-        $context = [
-            'members' => $members,
-            'group'   => $group,
-        ];
+        $group = $this->loadGroup($group);
 
-        return Inertia::render('Group/Members', $context);
+        if($group->visibility === 'public' || $group->is_member) {
+            $context = [
+                'members' => $members,
+                'group'   => $group,
+            ];
+    
+            return Inertia::render('Group/Members', $context);
+        } else {
+
+            $requested = GroupMember::where('status', 'pending')->where('group_id', $group->id)->where('member_id'. Auth::id())->exists();
+
+            $context = [
+                'group' => $group,
+                'requested' => $requested,
+            ];
+
+            return Inertia::render('Group/PrivateGroup', $context);
+        }
     }
 
     public function joinGroup(Group $group) {
@@ -107,6 +168,49 @@ class GroupController extends Controller
             'status'    => $group->visibility === 'private' ? 'pending' : 'approved',
         ]);
 
-        return redirect()->route('groups.posts', $group->id);
+        Notification::create([
+            'sender_id'    => Auth::id(),
+            'recipient_id' => $group->admin_id,
+            'title'        => $group->visibility === 'private' ? 'New member request' : 'New member joined',
+            'content'      => $group->visibility === 'private' ? Auth::user()->name . ' has requested to join ' . $group->name : Auth::user()->name . ' has joined your ' . $group->name . ' group',
+            'type'         => $group->visibility === 'private' ? 'group_request' : 'group_join',
+            'href'         => $group->visibility === 'private' ? "/group/{$group->id}/requests" : "/group/{$group->id}/members",
+        ]);
+
+        return redirect()->route('group.posts', $group->id);
+    }
+
+    public function aboutGroup(Group $group) {
+        
+    }
+
+    public function cancelJoinRequest(Group $group) {
+        $groupmember = GroupMember::where('status', 'pending')->where('group_id', $group->id)->where('member_id', Auth::id())->first();
+        $groupmember->delete();
+
+        return redirect()->back();
+    }
+
+    public function acceptJoinRequest(GroupMember $request) {
+        $request->update([
+            'status' => 'approved',
+        ]);
+
+        Notification::create([
+            'sender_id'    => Auth::id(),
+            'recipient_id' => $request->member_id,
+            'title'        => 'Welcome to ' . $request->group->name,
+            'content'      => 'The admin of ' . $request->group->name . ' has accepted your join request',
+            'type'         => 'group_request_accepted',
+            'href'         => "/group/{$request->group->id}/posts"
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function declineJoinRequest(GroupMember $request) {
+        $request->delete();
+
+        return redirect()->back();
     }
 }

@@ -177,7 +177,7 @@ class FeedController extends Controller
 
     public function postDetails(Request $request, Post $post) {
 
-        $post->load(['author', 'galleries'])
+        $post->load(['author', 'galleries', 'group'])
             ->loadCount('likes')
             ->loadCount(['likes as isLiked' => function ($query) {
                 $query->where('user_id', Auth::id());
@@ -192,8 +192,8 @@ class FeedController extends Controller
         $post->isLiked = $post->isLiked > 0;
 
         $context = [
-            'post' => $post,
-            'comments' => $comments
+            'post'      => $post,
+            'comments'  => $comments
         ];
 
         return Inertia::render('Posts/PostDetails', $context);
@@ -202,7 +202,7 @@ class FeedController extends Controller
     public function postImageDetails(Post $post, Gallery $image = null)
     {
         // Load post details with necessary relationships
-        $post->load(['author', 'galleries'])
+        $post->load(['author', 'galleries', 'group'])
             ->loadCount('likes')
             ->loadCount(['likes as isLiked' => function ($query) {
                 $query->where('user_id', Auth::id());

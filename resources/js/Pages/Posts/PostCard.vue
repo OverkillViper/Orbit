@@ -7,6 +7,7 @@ import PostContext from './PostContext.vue';
 const collapsed = ref(true);
 
 const props = defineProps({
+    auth        : Object,
     post        : Object,
     showgroup   : Boolean,
 });
@@ -33,7 +34,7 @@ const props = defineProps({
             <button class="text-neutral-400 hover:text-white transition" v-tooltip.bottom="'Copy Post'"><span class="pi pi-clipboard"></span></button>
             <Link :href="route('posts.likes.toggle', post.id)" as="button" method="post" class="text-neutral-400 hover:text-white transition" v-tooltip.bottom="post.isLiked ? 'Cheered' : 'Cheers'"><span class="pi" :class="post.isLiked ? 'pi-heart-fill' : 'pi-heart'"></span></Link>
         </div>
-        <PostContext :post="post"/>
+        <PostContext :post="post" v-if="post.author.id === auth.user.id"/>
     </div>
     <div class="grid gap-4 relative" v-if="post.galleries.length" :class="post.galleries.length < 4 ? 'grid-cols-' + post.galleries.length : 'grid-cols-2'">
         <Link :href="route('post.details.images', [post = post.id, image = gallery.id])" v-for="gallery in post.galleries.slice(0, 4)" :key="gallery.id" >

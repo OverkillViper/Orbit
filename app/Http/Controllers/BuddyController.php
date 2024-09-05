@@ -25,7 +25,7 @@ class BuddyController extends Controller
             'title'        => 'New buddy request',
             'content'      => Auth::user()->name . ' has sent you a buddy request',
             'type'         => 'buddy_request_sent',
-            'href'         => 'profile.buddies.requests',
+            'href'         => '/profile/buddy-requests',
         ]);
 
         return redirect()->back();
@@ -56,7 +56,7 @@ class BuddyController extends Controller
             'title'        => 'New buddy',
             'content'      => Auth::user()->name . ' has accepted your buddy request',
             'type'         => 'buddy_request_accepted',
-            'href'         => 'profile.buddies',
+            'href'         => '/profile/buddies',
         ]);
 
         return redirect()->back();
