@@ -91,7 +91,7 @@ class MyProfileController extends Controller
     public function posts() {
 
         $posts = Post::where('author_id', '=', Auth::id())
-                     ->with(['author', 'galleries'])
+                     ->with(['author', 'galleries', 'group'])
                      ->withCount('likes')
                      ->withCount(['likes as isLiked' => function ($query) {
                          $query->where('user_id', Auth::id());

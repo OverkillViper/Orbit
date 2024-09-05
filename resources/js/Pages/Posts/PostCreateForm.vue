@@ -15,11 +15,13 @@ const loading = ref(false);
 const postForm = useForm({
     content     : '',
     images      : null,
-    visibility  : 'public'
+    visibility  : 'public',
+    group_id    : null,
 })
 
 const props = defineProps({
-    user : Object,
+    user  : Object,
+    group : Object,
 });
 
 const visibilities = ['public', 'friends', 'private'];
@@ -32,6 +34,8 @@ const onSelectedFiles = (event) => {
 
 const createPost = () => {
     loading.value = true;
+
+    postForm.group_id = props.group ? props.group.id : null;
 
     postForm.post(route('post.store'), {
         onFinish: () => {

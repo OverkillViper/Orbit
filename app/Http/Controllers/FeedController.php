@@ -11,37 +11,10 @@ use App\Models\Post;
 use App\Models\Like;
 use App\Models\Gallery;
 use App\Models\Comment;
-use Illuminate\Support\Facades\Storage;
+use App\Helpers\TimeHelper;
 
 class FeedController extends Controller
 {
-
-    private function addTimeDifference($item)
-    {
-        $createdAt = Carbon::parse($item->created_at);
-        $now = Carbon::now();
-
-        $secondsDifference = $createdAt->diffInSeconds($now);
-
-        if ($secondsDifference < 60) {
-            $item->time_difference = intval($secondsDifference) . ' seconds ago';
-        } else {
-            $minutesDifference = $createdAt->diffInMinutes($now);
-            if ($minutesDifference < 60) {
-                $item->time_difference = intval($minutesDifference) . ' minutes ago';
-            } else {
-                $hoursDifference = $createdAt->diffInHours($now);
-                if ($hoursDifference < 24) {
-                    $item->time_difference = intval($hoursDifference) . ' hours ago';
-                } else {
-                    $daysDifference = $createdAt->diffInDays($now);
-                    $item->time_difference = intval($daysDifference) . ' days ago';
-                }
-            }
-        }
-
-        return $item;
-    }
 
     private function getComments(Post $post) {
         $comments = Comment::where('post_id', $post->id)
@@ -59,11 +32,11 @@ class FeedController extends Controller
         ->orderBy('created_at', 'desc')
         ->get()
         ->map(function ($comment) {
-            $comment = $this->addTimeDifference($comment);
+            $comment = TimeHelper::addTimeDifference($comment);
             $comment->isLiked = $comment->isLiked > 0;
 
             $comment->replies = $comment->replies->map(function ($reply) {
-                $reply = $this->addTimeDifference($reply);
+                $reply = TimeHelper::addTimeDifference($reply);
                 $reply->isLiked = $reply->isLiked > 0;
                 return $reply;
             });
@@ -83,7 +56,7 @@ class FeedController extends Controller
                         ->take(3)
                         ->get()
                         ->map(function ($request) {
-                            $request = $this->addTimeDifference($request);
+                            $request = TimeHelper::addTimeDifference($request);
                             return $request;
                         }) : null;
 
@@ -99,7 +72,7 @@ class FeedController extends Controller
                                    return $buddyRequest;
                                });
 
-        $posts = Post::with(['author', 'galleries'])
+        $posts = Post::with(['author', 'galleries', 'group'])
                     ->withCount('likes')
                     ->withCount(['likes as isLiked' => function ($query) {
                         $query->where('user_id', Auth::id());
@@ -107,7 +80,7 @@ class FeedController extends Controller
                     ->orderBy('created_at', 'desc')
                     ->get()
                     ->map(function ($post) {
-                        $post = $this->addTimeDifference($post);
+                        $post = TimeHelper::addTimeDifference($post);
                         $post->isLiked = $post->isLiked > 0;
                         return $post;
                     });
@@ -211,7 +184,7 @@ class FeedController extends Controller
             }]);
 
         // Calculate time difference
-        $post = $this->addTimeDifference($post);
+        $post = TimeHelper::addTimeDifference($post);
 
         $comments = $this->getComments($post);
 
@@ -236,7 +209,7 @@ class FeedController extends Controller
             }]);
 
         // Calculate time difference (same as above)
-        $post = $this->addTimeDifference($post);
+        $post = TimeHelper::addTimeDifference($post);
 
         $post->isLiked = $post->isLiked > 0;
 

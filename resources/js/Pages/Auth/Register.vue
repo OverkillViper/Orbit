@@ -49,7 +49,7 @@ const submit = () => {
 
             <div class="flex flex-col items-center">
                 <div>Already have account?</div>
-                <Link :href="route('login')" class="my-4">
+                <Link :href="route('login')" class="mt-4">
                     <Button label="Sign In" icon="sign-in" />
                 </Link>
             </div>

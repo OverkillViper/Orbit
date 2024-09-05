@@ -25,4 +25,10 @@ Route::middleware('auth')->group(function () {
 
     // Groups
     Route::get('/groups',                              [GroupController::class, 'groups'])->name('groups');
+    Route::get('/groups/discover',                     [GroupController::class, 'discoverGroups'])->name('groups.discover');
+    Route::post('/group/create',                       [GroupController::class, 'createGroup'])->name('group.create');
+    Route::delete('/group/{group}/delete',             [GroupController::class, 'deleteGroup'])->name('group.delete');
+    Route::get('/group/{group}/posts',                 [GroupController::class, 'groupPosts'])->name('group.posts');
+    Route::get('group/{group}/members',                [GroupController::class, 'groupMembers'])->name('group.members');
+    Route::post('group/{group}/join',                  [GroupController::class, 'joinGroup'])->name('group.join');
 });

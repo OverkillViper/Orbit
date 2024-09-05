@@ -7,7 +7,8 @@ import PostContext from './PostContext.vue';
 const collapsed = ref(true);
 
 const props = defineProps({
-    post : Object,
+    post        : Object,
+    showgroup   : Boolean,
 });
 
 </script>
@@ -18,7 +19,14 @@ const props = defineProps({
     <div class="flex items-center">
         <UserAvatar size="large" :user="post.author" :href="route('profile.posts')"/>
         <div class="ms-4 flex-grow">
-            <div class="text-white font-semibold">{{ post.author.name }}</div>
+            
+            <div class="flex items-center gap-x-2">
+                <div class="text-white font-semibold">{{ post.author.name }}</div>
+                <span class="pi pi-angle-right" style="font-size: 0.8rem;" v-if="post.group" v-show="showgroup"></span>
+                <Link :href="route('group.posts', post.group.id)" v-show="showgroup" v-if="post.group" class="hover:underline">
+                    {{ post.group.name }}
+                </Link>
+            </div>
             <div class="text-xs text-neutral-400">{{ post.time_difference }}</div>
         </div>
         <div class="flex items-center gap-x-4 me-2">

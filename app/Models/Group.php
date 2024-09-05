@@ -19,4 +19,14 @@ class Group extends Model
     {
         return $this->belongsTo(User::class, 'admin_id');
     }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class,'group_id');
+    }
+
+    public function members()
+    {
+        return $this->hasMany(GroupMember::class, 'group_id')->where('status', 'approved');
+    }
 }

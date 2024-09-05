@@ -51,10 +51,10 @@ const removeCoverPhoto = () => {
 <template>
     <Button label="Change cover photo" icon="camera" @click="visible = true"/>
 
-    <Dialog v-model:visible="visible" modal header="Update your Cover Photo" :style="{ width: '45rem' }">
+    <Dialog v-model:visible="visible" modal header="Update Cover Photo" :style="{ width: '45rem' }">
         <template #header>
             <div class="inline-flex items-center justify-center gap-2 text-white bg-se">
-                <span class="font-bold whitespace-nowrap text-white">Update Your Cover Photo</span>
+                <span class="font-bold whitespace-nowrap text-white">Update Cover Photo</span>
             </div>
         </template>
         <form @submit.prevent>
