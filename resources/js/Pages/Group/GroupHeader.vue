@@ -25,7 +25,7 @@ const searchGroups = () => {
         <div class="flex items-center mt-4">
             <form @submit.prevent="searchGroups" class="w-1/3 flex items-center gap-x-2">
                 <TextInput icon="search" placeholder="Find groups" v-model="searchGroupForm.query"/>
-                <Button label="Search"/>
+                <Button label="Search" class="h-10"/>
             </form>
             <div class="flex items-center justify-end flex-grow gap-x-4">
                 <Link :href="route('groups.discover')">

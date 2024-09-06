@@ -13,7 +13,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/post/{post}/update',                  [FeedController::class, 'updatePost'])->name('post.update');
     Route::delete('/post/{post}/delete',               [FeedController::class, 'deletePost'])->name('post.delete');
     Route::delete('/post/images/{gallery}/remove',     [FeedController::class, 'removePostImage'])->name('post.image.remove');
-
+    Route::get('/post/{post}/likes',                   [FeedController::class, 'postLikes'])->name('post.likes');
+    Route::get('/post/{post}/likes/images/{image?}',   [FeedController::class, 'postImageLikes'])->name('post.likes.images');
 
     // Likes
     Route::post('like-post/{post}',                    [FeedController::class, 'toggleLikePost'])->name('posts.likes.toggle');

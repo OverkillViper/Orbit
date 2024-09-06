@@ -36,7 +36,7 @@ const search = () => {
                 </form>
                 <div class="flex items-center">
                     <NavbarItem icon="user"        label="My Profile" :href="route('profile.posts')"/>
-                    <NavbarItem icon="comment"     label="Messages"   :href="route('dashboard')"/>
+                    <NavbarItem icon="comment"     label="Messages"   :href="route('messages.conversations')"/>
                     <NavbarItem icon="face-smile"  label="Friends"    :href="route('profile.buddies')"/>
                     <NavbarItem icon="users"       label="Groups"     :href="route('groups')"/>
                     <NavbarItem icon="calendar"    label="Events"     :href="route('dashboard')"/>
@@ -44,8 +44,8 @@ const search = () => {
                 </div>
             </div>
             <div class="flex items-center justify-end basis-1/5 2xl:basis-1/6 gap-x-4">
-                <Notifications />
-                <Link :href="route('logout')" method="post" as="button">
+                <Notifications v-tooltip.bottom="'Notifications'"/>
+                <Link :href="route('logout')" method="post" as="button" class="h-12" v-tooltip.bottom="'Logout'">
                     <span class="pi pi-power-off text-neutral-500 hover:text-white transition" style="font-size: 0.9rem;"></span>
                 </Link>
             </div>

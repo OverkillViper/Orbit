@@ -12,6 +12,10 @@ const props = defineProps({
     showgroup   : Boolean,
 });
 
+function formatContent(content) {
+  return content.replace(/\n/g, '<br>');
+}
+
 </script>
 
 <template>
@@ -46,23 +50,22 @@ const props = defineProps({
             </div>
         </Link>
     </div>
-    <div class="text-sm" :class="{'line-clamp-2' : collapsed}">
-        {{ post.content }}
-    </div>
+    <div class="text-sm" :class="{'line-clamp-2' : collapsed}" v-html="formatContent(post.content)"></div>
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-x-4">
-            <div class="flex items-center cursor-default text-neutral-400 hover:text-white transition text-sm">
+            <Link class="flex items-center cursor-default text-neutral-400 hover:text-white transition text-sm" :href="post.galleries.length ? route('post.likes.images', post.id) : route('post.likes', post.id)">
                 <span class="pi pi-heart-fill me-2" style="font-size: 0.7rem;"></span>
                 <span class="me-1">{{ post.likes_count }}</span>
                 <span>Cheers</span>
-            </div>
-            <Link :href="post.galleries.length ? route('post.details.images', post.id) : route('post.details', post.id)" class="flex items-center cursor-default text-neutral-400 hover:text-white transition ">
-                <span class="pi pi-comments" style="font-size: 0.7rem;"></span>
-                <span class="text-sm ms-2">Comments</span>
+            </Link>
+            <Link class="flex items-center cursor-default text-neutral-400 hover:text-white transition text-sm" :href="post.galleries.length ? route('post.details.images', post.id) : route('post.details', post.id)">
+                <span class="pi pi-comments me-2" style="font-size: 0.7rem;"></span>
+                <span class="me-1">{{ post.comments_count }}</span>
+                <span class="text-sm">Comments</span>
             </Link>
         </div>
         
-        <div class="text-xs text-neutral-400 hover:text-white transition cursor-default">
+        <div class="text-xs text-neutral-400 hover:text-white transition cursor-default select-none">
             <span class="pi" style="font-size: 0.5rem;" :class="collapsed ? 'pi-chevron-down' : 'pi-chevron-up'"></span>
             <span class="ms-2" @click="collapsed = !collapsed">Show {{ collapsed ? 'more' : 'less' }}</span>
         </div>

@@ -37,6 +37,11 @@ class Post extends Model
         return $this->morphMany(Like::class, 'likeable');
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'post_id');
+    }
+
     public function isLiked()
     {
         // Check if the likes collection contains a like by the authenticated user

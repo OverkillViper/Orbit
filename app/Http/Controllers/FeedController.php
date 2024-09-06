@@ -47,6 +47,16 @@ class FeedController extends Controller
         return $comments;
     }
 
+    private function getLikes(Post $post) {
+        $likes = Like::with('user')
+                        ->where('likeable_type', Post::class)
+                        ->where('likeable_id', $post->id)
+                        ->get();
+
+        return $likes;
+    }
+
+
     public function index() {
 
         $buddy_requests = Auth::check() ?
@@ -74,6 +84,7 @@ class FeedController extends Controller
 
         $posts = Post::with(['author', 'galleries', 'group'])
                     ->withCount('likes')
+                    ->withCount('comments')
                     ->withCount(['likes as isLiked' => function ($query) {
                         $query->where('user_id', Auth::id());
                     }])
@@ -179,6 +190,7 @@ class FeedController extends Controller
 
         $post->load(['author', 'galleries', 'group'])
             ->loadCount('likes')
+            ->loadCount('comments')
             ->loadCount(['likes as isLiked' => function ($query) {
                 $query->where('user_id', Auth::id());
             }]);
@@ -199,11 +211,34 @@ class FeedController extends Controller
         return Inertia::render('Posts/PostDetails', $context);
     }
 
+    public function postLikes(Post $post) {
+        $post->load(['author', 'galleries', 'group'])
+            ->loadCount('likes')
+            ->loadCount('comments')
+            ->loadCount(['likes as isLiked' => function ($query) {
+                $query->where('user_id', Auth::id());
+            }]);
+        
+        $post = TimeHelper::addTimeDifference($post);
+
+        $post->isLiked = $post->isLiked > 0;
+
+        $likes = $this->getLikes($post);
+
+        $context = [
+            'post'      => $post,
+            'likes'     => $likes,
+        ];
+
+        return Inertia::render('Posts/PostLikes', $context);
+    }
+
     public function postImageDetails(Post $post, Gallery $image = null)
     {
         // Load post details with necessary relationships
         $post->load(['author', 'galleries', 'group'])
             ->loadCount('likes')
+            ->loadCount('comments')
             ->loadCount(['likes as isLiked' => function ($query) {
                 $query->where('user_id', Auth::id());
             }]);
@@ -232,6 +267,37 @@ class FeedController extends Controller
         return Inertia::render('Posts/PostDetails', $context);
     }
 
+    public function postImagesLikes(Post $post, Gallery $image = null) {
+        $post->load(['author', 'galleries', 'group'])
+            ->loadCount('likes')
+            ->loadCount('comments')
+            ->loadCount(['likes as isLiked' => function ($query) {
+                $query->where('user_id', Auth::id());
+            }]);
+
+        // Calculate time difference (same as above)
+        $post = TimeHelper::addTimeDifference($post);
+
+        $post->isLiked = $post->isLiked > 0;
+
+        // Determine current image index for navigation
+        $currentimageIndex = $image ? $post->galleries->search(fn($img) => $img->id === $image->id) : 0;
+        $previousimage = $post->galleries[$currentimageIndex - 1] ?? null;
+        $nextimage = $post->galleries[$currentimageIndex + 1] ?? null;
+
+        $likes = $this->getLikes($post);
+
+        $context = [
+            'post'          => $post,
+            'currentimage'  => $image ?? $post->galleries()->first(),
+            'previousimage' => $previousimage,
+            'nextimage'     => $nextimage,
+            'likes'         => $likes,
+        ];
+
+        return Inertia::render('Posts/PostLikes', $context);
+    }
+
     public function postComment(Request $request, Post $post) {
 
         $newComment = Comment::create([
@@ -246,7 +312,7 @@ class FeedController extends Controller
                 $path = $image->store('images/comments', 'public');
 
                 // Create a new Gallery entry
-                $newComment->galleries()->create([
+                $newComment->gallery()->create([
                     'path' => $path,
                 ]);
             }

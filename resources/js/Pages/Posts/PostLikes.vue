@@ -13,7 +13,7 @@ const props = defineProps({
     currentimage    : Object,
     previousimage   : Object,
     nextimage       : Object,
-    comments        : Array,
+    likes           : Array,
 });
 
 const collapsed = ref(true);
@@ -69,11 +69,11 @@ function formatContent(content) {
                 </button>
 
                 <div class="flex gap-x-4 mt-4">
-                    <Link class="flex items-center cursor-default text-neutral-400 hover:text-white transition text-sm" :href="post.galleries.length ? route('post.likes.images', post.id) : route('post.likes', post.id)">
+                    <div class="flex items-center cursor-default text-neutral-400 hover:text-white transition text-sm">
                         <span class="pi pi-heart-fill me-2" style="font-size: 0.7rem;"></span>
                         <span class="me-1">{{ post.likes_count }}</span>
                         <span>Cheers</span>
-                    </Link>
+                    </div>
                     <Link class="flex items-center cursor-default text-neutral-400 hover:text-white transition text-sm" :href="post.galleries.length ? route('post.details.images', post.id) : route('post.details', post.id)">
                         <span class="pi pi-comments me-2" style="font-size: 0.7rem;"></span>
                         <span class="me-1">{{ post.comments_count }}</span>
@@ -96,14 +96,13 @@ function formatContent(content) {
                     </button>
                 </div>
 
-                <div class="my-4">
-                    <CommentForm :auth="auth" :post="post.id" />
-                </div>
-                
-                <hr class="border-neutral-700">
-                
-                <div class="my-4" v-show="showComments" v-if="comments.length">
-                    <Comment  v-for="comment in comments" :key="comment.id" :comment="comment" :auth="auth" class="my-4"/>
+                <div class="my-4 flex flex-col gap-y-4">
+                    <div v-for="like in likes" :key="like" class="flex items-center gap-x-4">
+                        <div>
+                            <UserAvatar :user="like.user" :href="route('dashboard')"/>
+                        </div>
+                        <div class="font-semibold select-none">{{ like.user.name }}</div>
+                    </div>
                 </div>
             </div>
         </main>

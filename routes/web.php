@@ -33,3 +33,4 @@ require __DIR__.'/feed.php';
 require __DIR__.'/profile.php';
 require __DIR__.'/frontend.php';
 require __DIR__.'/buddies.php';
+require __DIR__.'/messages.php';

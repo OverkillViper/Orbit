@@ -40,9 +40,9 @@ watch(() => usePage().props.unseen_notifications, (newUnseenNotifications) => {
 <template>
     <div>
         <OverlayBadge severity="success" v-if="unseen_notifications">
-            <button class="text-neutral-500 hover:text-white transition flex items-center w-4" @click="toggle"><span class="pi pi-bell"></span></button>
+            <button class="text-neutral-500 hover:text-white transition flex items-center w-4 h-12" @click="toggle"><span class="pi pi-bell"></span></button>
         </OverlayBadge>
-        <button v-else class="text-neutral-500 hover:text-white transition flex items-center w-4" @click="toggle"><span class="pi pi-bell"></span></button>
+        <button v-else class="text-neutral-500 hover:text-white transition flex items-center w-4 h-12" @click="toggle"><span class="pi pi-bell"></span></button>
 
         <Popover ref="menu" :dt="mydt">
             <div class="w-[25rem] 2xl:w-[30rem] p-4">
