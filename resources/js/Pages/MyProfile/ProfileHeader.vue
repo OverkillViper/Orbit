@@ -35,10 +35,10 @@ const props = defineProps({
                     <div>{{ buddies_count }} Buddies</div>
                 </div>
                 <div class="flex items-center gap-x-4">
-                    <ProfileMenuItem icon="info-circle" label="About" href="#"/>
+                    <ProfileMenuItem icon="info-circle" label="About"   :href="route('profile.posts')"/>
                     <ProfileMenuItem icon="face-smile"  label="Buddies" :href="route('profile.buddies')"/>
-                    <ProfileMenuItem icon="images"      label="Photos" href="#"/>
-                    <ProfileMenuItem icon="users"       label="Groups" href="#"/>
+                    <ProfileMenuItem icon="images"      label="Photos"  href="#"/>
+                    <ProfileMenuItem icon="users"       label="Groups"  :href="route('groups.joined')"/>
                 </div>
             </div>
         </div>

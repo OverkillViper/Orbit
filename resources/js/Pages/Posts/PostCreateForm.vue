@@ -51,7 +51,7 @@ const createPost = () => {
 </script>
 
 <template>
-    <div class="rounded-xl bg-secondary p-6">
+    <div class="rounded-xl bg-secondary p-4">
         <div class="flex gap-x-4 items-center">
             <UserAvatar size="large" :user="user" :href="route('profile.posts')"/>
             

@@ -23,11 +23,11 @@ const props = defineProps({
                 <Link :href="route('group.posts', group.id)">
                     <Button label="Visit group"/>
                 </Link>
-                <Link href="#" v-if="group.is_member">
+                <Link :href="route('group.leave', group.id)" v-if="group.is_member" as="button" method="post">
                     <Button label="Leave group"/>
                 </Link>
-                <Link :href="route('group.join', group.id)" v-else>
-                    <Button label="Request to Join" v-if="group.visibility === 'private'" />
+                <Link :href="route('group.join', group.id)" v-else as="button" method="post">
+                    <Button label="Request to Join" v-if="group.visibility === 'private'"/>
                     <Button label="Join Group" v-else/>
                 </Link>
             </div>

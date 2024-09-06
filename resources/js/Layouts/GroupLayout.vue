@@ -59,7 +59,7 @@ const props = defineProps({
                         <span class="pi pi-users" style="font-size: 0.95rem;"></span>
                         <span class="text-sm">Members</span>
                     </Link>
-                    <Link :href="route('dashboard')" class="flex items-center hover:text-white transition-all gap-x-2" :class="selected === 'about' ? 'text-white' : 'text-neutral-400'">
+                    <Link :href="route('group.about', group.id)" class="flex items-center hover:text-white transition-all gap-x-2" :class="selected === 'about' ? 'text-white' : 'text-neutral-400'">
                         <span class="pi pi-info-circle" style="font-size: 0.95rem;"></span>
                         <span class="text-sm">About</span>
                     </Link>

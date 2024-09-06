@@ -12,12 +12,38 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\TimeHelper;
+use App\Helpers\BuddyHelper;
 
 class GroupController extends Controller
 {
+
+    private function loadGroup(Group $group) {
+        $is_member = GroupMember::where('status', 'approved')->where('group_id', $group->id)->where('member_id', Auth::id())->exists();
+        $requests  = GroupMember::where('status', 'pending')->where('group_id', $group->id)->count();
+        $member_count = GroupMember::where('status', 'approved')->where('group_id', $group->id)->count();
+
+
+        $group->is_member     = $is_member;
+        $group->requests      = $requests;
+        $group->member_count  = $member_count;
+
+        return $group;
+    }
+
     public function groups(Request $request) {
 
-        $context = [];
+        $query = $request->input("query");
+
+        $groups = $query ? Group::where("name","like","%".$query."%")->orderBy('created_at', 'desc')->get()->map(function ($group) {
+            $group = $this->loadGroup($group);
+
+            return $group;
+        }) : null;
+    
+        $context = [
+            'request' => $query,
+            'groups'  => $groups,
+        ];
 
         return Inertia::render('Group/Groups', $context);
     }
@@ -64,19 +90,6 @@ class GroupController extends Controller
         ];
 
         return Inertia::render('Group/AllGroups', $context);
-    }
-
-    private function loadGroup(Group $group) {
-        $is_member = GroupMember::where('status', 'approved')->where('group_id', $group->id)->where('member_id', Auth::id())->exists();
-        $requests  = GroupMember::where('status', 'pending')->where('group_id', $group->id)->count();
-        $member_count = GroupMember::where('status', 'approved')->where('group_id', $group->id)->count();
-
-
-        $group->is_member     = $is_member;
-        $group->requests      = $requests;
-        $group->member_count  = $member_count;
-
-        return $group;
     }
 
     public function groupPosts(Group $group) {
@@ -180,8 +193,23 @@ class GroupController extends Controller
         return redirect()->route('group.posts', $group->id);
     }
 
+    public function leaveGroup(Group $group) {
+        $groupmember = GroupMember::where('status', 'approved')->where('group_id', $group->id)->where('member_id', Auth::id())->first();
+        $groupmember->delete();
+
+        return redirect()->back();
+    }
+
     public function aboutGroup(Group $group) {
-        
+        $group = $this->loadGroup($group);
+
+        $group->load('admin');
+
+        $context = [
+            'group' => $group,
+        ];
+
+        return Inertia::render('Group/AboutGroup', $context);
     }
 
     public function cancelJoinRequest(Group $group) {
@@ -212,5 +240,21 @@ class GroupController extends Controller
         $request->delete();
 
         return redirect()->back();
+    }
+    
+    public function joinedGroups() {
+        $groups = GroupMember::with('group')->where("status", "approved")->where('member_id', Auth::id())->get()->map(function ($groupmember) {
+            $group = $groupmember->group;
+            $group->is_member = true;
+
+            return $group;
+        });
+
+        $context = [
+            'groups'        => $groups,
+            'buddies_count' => BuddyHelper::getBuddiesCount(),
+        ];
+
+        return Inertia::render('Group/JoinedGroups', $context);
     }
 }

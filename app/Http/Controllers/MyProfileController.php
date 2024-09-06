@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\BuddyRequest;
 use App\Models\Post;
 use Carbon\Carbon;
+use App\Helpers\BuddyHelper;
+
 
 class MyProfileController extends Controller
 {
@@ -77,17 +79,6 @@ class MyProfileController extends Controller
         return redirect()->back();
     }
 
-    private function getBuddiesCount() {
-        $buddies_count = BuddyRequest::where('accepted', true)
-                                     ->where(function ($query) {
-                                         $query->where('sender_id', Auth::id())
-                                             ->orWhere('recipient_id', Auth::id());
-                                     })
-                                     ->count();
-
-        return $buddies_count;
-    }
-
     public function posts() {
 
         $posts = Post::where('author_id', '=', Auth::id())
@@ -131,7 +122,7 @@ class MyProfileController extends Controller
 
         $context = [
             'posts'         => $posts,
-            'buddies_count' => $this->getBuddiesCount(),
+            'buddies_count' => BuddyHelper::getBuddiesCount(),
         ];
 
         return Inertia::render('MyProfile/Posts', $context);
@@ -155,7 +146,7 @@ class MyProfileController extends Controller
 
         $context = [
             'buddies'        => $buddies,
-            'buddies_count'  => $this->getBuddiesCount(),
+            'buddies_count'  => BuddyHelper::getBuddiesCount(),
             'buddy_requests' => $buddy_requests
         ];
 
@@ -168,7 +159,7 @@ class MyProfileController extends Controller
 
         $context = [
             'buddy_requests' => $buddy_requests,
-            'buddies_count'  => $this->getBuddiesCount(),
+            'buddies_count'  => BuddyHelper::getBuddiesCount(),
         ];
 
         return Inertia::render('MyProfile/BuddyRequests', $context);
@@ -180,7 +171,7 @@ class MyProfileController extends Controller
 
         $context = [
             'sent_buddy_requests' => $sent_buddy_requests,
-            'buddies_count'       => $this->getBuddiesCount(),
+            'buddies_count'       => BuddyHelper::getBuddiesCount(),
         ];
 
         return Inertia::render('MyProfile/SentBuddyRequests', $context);

@@ -31,8 +31,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/group/{group}/posts',                 [GroupController::class, 'groupPosts'])->name('group.posts');
     Route::get('/group/{group}/members',               [GroupController::class, 'groupMembers'])->name('group.members');
     Route::post('/group/{group}/join',                 [GroupController::class, 'joinGroup'])->name('group.join');
+    Route::post('/group/{group}/leave',                [GroupController::class, 'leaveGroup'])->name('group.leave');
     Route::post('/group/{group}/cancel-request',       [GroupController::class, 'cancelJoinRequest'])->name('group.request.cancel');
     Route::get('/group/{group}/requests',              [GroupController::class, 'memberRequests'])->name('group.members.requests');
     Route::post('/group/request/{request}/accept',     [GroupController::class, 'acceptJoinRequest'])->name('group.members.request.accept');
     Route::post('/group/request/{request}/decline',    [GroupController::class, 'declineJoinRequest'])->name('group.members.request.decline');
+    Route::get('/group/{group}/about',                 [GroupController::class, 'aboutGroup'])->name('group.about');
+    Route::get('/group/joined',                        [GroupController::class, 'joinedGroups'])->name('groups.joined');
 });
